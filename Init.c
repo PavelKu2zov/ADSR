@@ -12,17 +12,24 @@ void Init()
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
   
   
-/********************************Настройка GPIO для TIMER1*********************/  
+/********************************Настройка GPIO *********************/  
   GPIO_DeInit(GPIOA);
   GPIO_InitTypeDef GPIO_InitStruct;
   
+  //для TIMER1
   GPIO_InitStruct.GPIO_Pin = GPIO_Pin_8;//ШИМ
   GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;   
   GPIO_Init(GPIOA, &GPIO_InitStruct);
-  
+  //тестовый
   GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9;//тестовый
   GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
+  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;   
+  GPIO_Init(GPIOA, &GPIO_InitStruct);
+  
+  //для запуска огибающей
+  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_12;
+  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;   
   GPIO_Init(GPIOA, &GPIO_InitStruct);
   

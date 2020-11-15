@@ -21,3 +21,12 @@ typedef struct
   uint16_t release_data_size;
   
 }TypeDefADSR;
+
+
+typedef enum
+{
+  ATTACK = 0,
+  DECAY,
+  SUSTAIN,
+  RELEASE
+}TypeDefADSRState;

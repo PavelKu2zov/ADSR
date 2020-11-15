@@ -16,7 +16,7 @@ void TIM2_IRQHandler(void)
   {
     switch(state)
     {
-    case 0: 
+    case ATTACK: 
       TIM_Cmd(TIM2, DISABLE);
       TIM_SetAutoreload(TIM2, ADSR.attack_time);
       TIM2->CNT = 0;
@@ -25,7 +25,7 @@ void TIM2_IRQHandler(void)
       TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
       TIM_Cmd(TIM2, ENABLE);
       break;
-    case 1: 
+    case DECAY: 
       TIM_Cmd(TIM2, DISABLE);
       TIM_SetAutoreload(TIM2, ADSR.decay_time);
       TIM2->CNT = 0;
@@ -34,7 +34,7 @@ void TIM2_IRQHandler(void)
       TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
       TIM_Cmd(TIM2, ENABLE);
       break;
-    case 2: 
+    case SUSTAIN: 
       TIM_Cmd(TIM2, DISABLE);
       TIM_SetAutoreload(TIM2, ADSR.sustain_time);
       TIM2->CNT = 0;
@@ -43,7 +43,7 @@ void TIM2_IRQHandler(void)
       TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
       TIM_Cmd(TIM2, ENABLE);
       break;  
-    case 3: 
+    case RELEASE: 
       TIM_Cmd(TIM2, DISABLE);
       TIM_SetAutoreload(TIM2, ADSR.release_time);
       TIM2->CNT = 0;
@@ -63,8 +63,8 @@ void TIM2_IRQHandler(void)
 
   if (cnt < 0)
   {
-    if (state == 3)
-      state = 0;
+    if (state == RELEASE)
+      state = ATTACK;
     else
       state++;
   }
