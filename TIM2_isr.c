@@ -6,7 +6,7 @@ extern TypeDefADSR ADSR;
 
 void TIM2_IRQHandler(void)
 {
-  static int8_t state = 0;
+  
   static int16_t cnt = -1;
   static uint16_t *p;
   
@@ -14,10 +14,11 @@ void TIM2_IRQHandler(void)
   
   if (cnt < 0)
   {
-    switch(state)
+    switch(ADSR.state)
     {
     case ATTACK: 
       TIM_Cmd(TIM2, DISABLE);
+      TIM_Cmd(TIM1, ENABLE);
       TIM_SetAutoreload(TIM2, ADSR.attack_time);
       TIM2->CNT = 0;
       cnt = ADSR.attack_data_size-1;
@@ -44,11 +45,22 @@ void TIM2_IRQHandler(void)
       TIM_Cmd(TIM2, ENABLE);
       break;  
     case RELEASE: 
+      ADSR.flag = 1;
       TIM_Cmd(TIM2, DISABLE);
       TIM_SetAutoreload(TIM2, ADSR.release_time);
       TIM2->CNT = 0;
-      cnt = ADSR.release_data_size-1;
-      p = ADSR.release_data;
+	  cnt = 0;   
+      while (cnt < (ADSR.release_data_size-1))
+	  {
+		if (*(ADSR.release_data + cnt) <= TIM1->CCR1)
+		{			
+			p = ADSR.release_data + cnt;
+			cnt = (ADSR.release_data_size-1) - cnt;
+			break;
+		}
+		else
+			cnt++;
+          }
       TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
       TIM_Cmd(TIM2, ENABLE);
       break;
@@ -63,10 +75,18 @@ void TIM2_IRQHandler(void)
 
   if (cnt < 0)
   {
-    if (state == RELEASE)
-      state = ATTACK;
-    else
-      state++;
+    if (ADSR.state == ATTACK)
+      ADSR.state = DECAY;
+    else if (ADSR.state == DECAY)
+      ADSR.state = SUSTAIN;
+    else if (ADSR.state == SUSTAIN)
+      ADSR.state = SUSTAIN;
+    else  if ((ADSR.state == RELEASE) && (ADSR.flag == 1))
+    {
+      ADSR.state = ATTACK;
+      TIM_ITConfig(TIM2, TIM_IT_Update, DISABLE);
+      TIM_Cmd(TIM2, DISABLE);
+    }
   }
 
  GPIO_ResetBits(GPIOA, GPIO_Pin_9);

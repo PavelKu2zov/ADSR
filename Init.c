@@ -33,6 +33,18 @@ void Init()
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;   
   GPIO_Init(GPIOA, &GPIO_InitStruct);
   
+  //Selects the GPIO pin used as EXTI Line.
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource12);
+  
+  /********************************Настройка EXTI ****************************/
+  EXTI_DeInit();
+  EXTI_InitTypeDef EXTI_InitStruct;
+  EXTI_InitStruct.EXTI_Line = EXTI_Line12;
+  EXTI_InitStruct.EXTI_Mode = EXTI_Mode_Interrupt;
+  EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+  EXTI_InitStruct.EXTI_LineCmd = ENABLE;
+  EXTI_Init(&EXTI_InitStruct);	
+  
 /********************************Настройка Timer1 для ШИМ**********************/
   TIM_DeInit(TIM1);//clock 72MHz
   TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStruct;
@@ -65,7 +77,7 @@ void Init()
   /********************************Настройка Timer2***************************/
   TIM_DeInit(TIM2);
   //36 MHz clock
-  TIM_TimeBaseInitStruct.TIM_Prescaler = 0;
+  TIM_TimeBaseInitStruct.TIM_Prescaler = 250;
   TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseInitStruct.TIM_Period = 0xffff;
   TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV1;
@@ -74,7 +86,7 @@ void Init()
   
   TIM_ITConfig(TIM2, TIM_IT_Update, DISABLE);
   TIM_Cmd(TIM2, ENABLE);
-  
+  																				
   /********************************Настройка DMA******************************/
   DMA_DeInit(DMA1_Channel2);
   DMA_InitTypeDef DMA_InitStruct;
@@ -96,9 +108,14 @@ void Init()
   /********************************Настройка NVIC******************************/
   NVIC_InitTypeDef NVIC_InitStruct;
   NVIC_InitStruct.NVIC_IRQChannel = TIM2_IRQn;
-  NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 1;
   NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStruct);
   
+  NVIC_InitStruct.NVIC_IRQChannel = EXTI15_10_IRQn;
+  NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStruct);					  
 }

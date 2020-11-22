@@ -2,7 +2,13 @@
 #define ARR     144
 void Init(void);
 
-
+typedef enum
+{
+  ATTACK = 0,
+  DECAY,
+  SUSTAIN,
+  RELEASE
+}TypeDefADSRState;			
 typedef struct
 {
   uint16_t attack_time;         //time
@@ -19,14 +25,8 @@ typedef struct
   uint16_t decay_data_size;
   uint16_t sustain_data_size;
   uint16_t release_data_size;
-  
+  TypeDefADSRState state;
+  uint8_t flag;
 }TypeDefADSR;
 
 
-typedef enum
-{
-  ATTACK = 0,
-  DECAY,
-  SUSTAIN,
-  RELEASE
-}TypeDefADSRState;

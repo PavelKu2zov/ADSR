@@ -24,7 +24,7 @@ for (int i=0;i<ARR/2;i++)
   decay_data[i] = ARR-i;
 
 for (int i=0;i<ARR;i++)
-  sustain_data[i] = ARR/2 + (int)(sinf((float)(i)/5)*10);
+  sustain_data[i] = ARR/2;// + (int)(sinf((float)(i)/5)*10);
 
 for (int i=0;i<ARR/2;i++)
   release_data[i] = ARR/2 - i*i/72;
@@ -44,14 +44,15 @@ ADSR.decay_time = 188*2;
 ADSR.sustain_time = 1250*2;
 ADSR.release_time = 1500*2;
 
+ADSR.state = ATTACK;					
 DMA_Cmd(DMA1_Channel2, DISABLE);
 
 TIM_Cmd(TIM2, DISABLE);
 TIM_SetAutoreload(TIM2,1);
 TIM2->CNT = 0;
-TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-TIM_Cmd(TIM2, ENABLE);
-TIM_Cmd(TIM1, ENABLE);
+TIM_ITConfig(TIM2, TIM_IT_Update, DISABLE);
+TIM_Cmd(TIM2, DISABLE);
+//TIM_Cmd(TIM1, ENABLE);
 while(1)
 {
 //  if ((DMA1_Channel2->CCR & DMA_CCR2_EN) == DMA_CCR2_EN)
